@@ -22,14 +22,14 @@ using Reactor.Utilities;
 
 namespace TownOfUs
 {
-    [BepInPlugin(Id, "Town Of Us", VersionString)]
+    [BepInPlugin(Id, "Town Of Us: Reactivated", VersionString)]
     [BepInDependency(ReactorPlugin.Id)]
     [BepInDependency(SubmergedCompatibility.SUBMERGED_GUID, BepInDependency.DependencyFlags.SoftDependency)]
     [ReactorModFlags(Reactor.Networking.ModFlags.RequireOnAllClients)]
     public class TownOfUs : BasePlugin
     {
-        public const string Id = "com.slushiegoose.townofus";
-        public const string VersionString = "5.3.1";
+        public const string Id = "com.reactivated.townofus";
+        public const string VersionString = "5.4.0";
         public static System.Version Version = System.Version.Parse(VersionString);
         public const string VersionTag = "<color=#ff33fc></color>";
 
@@ -145,7 +145,7 @@ namespace TownOfUs
             ReactorCredits.Register<TownOfUs>(ReactorCredits.AlwaysShow);
             System.Console.WriteLine("000.000.000.000/000000000000000000");
 
-            _harmony = new Harmony("com.slushiegoose.townofus");
+            _harmony = new Harmony("com.reactivated.townofus");
 
             Generate.GenerateAll();
 
@@ -234,7 +234,7 @@ namespace TownOfUs
             CleanseSprite = CreateSprite("TownOfUs.Resources.Cleanse.png");
             DetectSprite = CreateSprite("TownOfUs.Resources.Detect.png");
 
-            ToUBanner = CreateSprite("TownOfUs.Resources.TownOfUsBanner.png");
+            ToUBanner = CreateSprite("TownOfUs.Resources.TouBanner.png", 125f);
             UpdateTOUButton = CreateSprite("TownOfUs.Resources.UpdateToUButton.png");
             UpdateSubmergedButton = CreateSprite("TownOfUs.Resources.UpdateSubmergedButton.png");
 
@@ -260,9 +260,8 @@ namespace TownOfUs
             ServerManager.DefaultRegions = new Il2CppReferenceArray<IRegionInfo>(new IRegionInfo[0]);
         }
 
-        public static Sprite CreateSprite(string name)
+        public static Sprite CreateSprite(string name, float pixelsPerUnit = 100f)
         {
-            var pixelsPerUnit = 100f;
             var pivot = new Vector2(0.5f, 0.5f);
 
             var assembly = Assembly.GetExecutingAssembly();

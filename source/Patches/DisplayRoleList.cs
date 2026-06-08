@@ -1,6 +1,7 @@
 using System.Collections.Generic;
 using AmongUs.GameOptions;
 using HarmonyLib;
+using Reactor.Utilities.Extensions;
 using TMPro;
 using TownOfUs.CustomOption;
 using UnityEngine;
@@ -10,7 +11,8 @@ namespace TownOfUs.Patches
     [HarmonyPatch(typeof(HudManager), nameof(HudManager.Update))]
     internal static class DisplayRoleList
     {
-        public static TextMeshPro RoleList;
+        public static GameObject RoleList;
+        public static TextMeshPro RoleListTextComp;
 
         private static readonly List<string> roleListText = new List<string>
         {
@@ -50,21 +52,36 @@ namespace TownOfUs.Patches
 
         public static void Postfix(HudManager __instance)
         {
-            if (AmongUsClient.Instance?.GameState != InnerNet.InnerNetClient.GameStates.Joined) return;
             if (GameOptionsManager.Instance.CurrentGameOptions.GameMode == GameModes.HideNSeek) return;
 
-            var pingTracker = UnityEngine.Object.FindObjectOfType<PingTracker>(true);
-            if (pingTracker == null)
-                return;
-
-            if (RoleList != null)
+            if (!LobbyBehaviour.Instance)
             {
-                UnityEngine.Object.Destroy(RoleList.gameObject);
-                RoleList = null;
+                if (RoleList)
+                {
+                    RoleList.SetActive(false);
+                }
+
+                return;
             }
 
-            RoleList = UnityEngine.Object.Instantiate(pingTracker.GetComponent<TextMeshPro>(), __instance.transform);
-            if (RoleList != null)
+            if (!RoleList)
+            {
+                var pingTracker = Object.FindObjectOfType<PingTracker>(true);
+                RoleList = Object.Instantiate(pingTracker.gameObject, __instance.transform);
+                RoleList.name = "RoleListText";
+                var pos = RoleList.gameObject.GetComponent<AspectPosition>();
+                pos.Alignment = AspectPosition.EdgeAlignments.LeftTop;
+                pos.DistanceFromEdge = new Vector3(0.43f, 0.1f, 1f);
+                RoleList.GetComponent<PingTracker>().Destroy();
+
+                RoleListTextComp = RoleList.GetComponent<TextMeshPro>();
+                RoleListTextComp.alignment = TextAlignmentOptions.TopLeft;
+                RoleListTextComp.verticalAlignment = VerticalAlignmentOptions.Top;
+                RoleListTextComp.fontSize = RoleListTextComp.fontSizeMin = RoleListTextComp.fontSizeMax = 3f;
+                RoleList.SetActive(false);
+            }
+            
+            if (RoleList)
             {
                 string rolelist = string.Empty;
 
@@ -96,14 +113,8 @@ namespace TownOfUs.Patches
 
                     rolelist += $"{GetRoleForSlot(slotValue)}\n";  
                 }
-
-                RoleList.alignment = TextAlignmentOptions.TopLeft;
-                RoleList.verticalAlignment = VerticalAlignmentOptions.Top;
-                RoleList.transform.localPosition = new Vector3(-4.9f, 2.9f, 0);
-                RoleList.fontSize = RoleList.fontSizeMin = RoleList.fontSizeMax = 3f;
-
-                RoleList.text = $"<color=#FFD700>Role List:</color>\n{rolelist}";
-                RoleList.enabled = true;
+                RoleListTextComp.text = $"<color=#FFD700>Role List:</color>\n{rolelist}";
+                RoleList.SetActive(true);
             }
         }
     }
@@ -113,9 +124,9 @@ namespace TownOfUs.Patches
     {
         private static void Postfix()
         {
-            if (DisplayRoleList.RoleList != null)
+            if (DisplayRoleList.RoleListTextComp)
             {
-                DisplayRoleList.RoleList.enabled = false;
+                DisplayRoleList.RoleListTextComp.enabled = false;
             }
         }
     }
@@ -125,9 +136,9 @@ namespace TownOfUs.Patches
     {
         private static void Postfix()
         {
-            if (DisplayRoleList.RoleList != null)
+            if (DisplayRoleList.RoleListTextComp)
             {
-                DisplayRoleList.RoleList.enabled = true;
+                DisplayRoleList.RoleListTextComp.enabled = true;
             }
         }
     }

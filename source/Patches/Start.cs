@@ -4,7 +4,7 @@ using Hazel;
 using TownOfUs.NeutralRoles.ExecutionerMod;
 using TownOfUs.NeutralRoles.GuardianAngelMod;
 using TownOfUs.Roles;
-using TownOfUs.Roles.Modifiers;
+using TownOfUs.Modifiers;
 using UnityEngine;
 using Object = UnityEngine.Object;
 

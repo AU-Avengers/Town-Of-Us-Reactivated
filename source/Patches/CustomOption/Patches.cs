@@ -568,6 +568,11 @@ namespace TownOfUs.CustomOption
 
             public static void AddSettings(LobbyViewSettingsPane __instance, MultiMenu menu)
             {
+                foreach (var option in __instance.settingsInfo)
+                {
+                    option.Destroy();
+                }
+                __instance.settingsInfo.Clear();
                 var options = CustomOption.AllOptions.Where(x => x.Menu == menu).ToList();
 
                 float num = 1.5f;
