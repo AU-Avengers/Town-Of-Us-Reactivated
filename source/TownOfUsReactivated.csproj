@@ -29,7 +29,6 @@
     </Target>
 
     <ItemGroup>
-        <EmbeddedResource Include="Resources\*" />
-        <EmbeddedResource Include="Resources\Hats\**" />
+        <EmbeddedResource Include="Resources\**\*.*" />
     </ItemGroup>
 </Project>

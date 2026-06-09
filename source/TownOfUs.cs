@@ -151,6 +151,44 @@ namespace TownOfUs
 
             bundledAssets = new();
 
+            var shortPath = "TownOfUs.Resources";
+
+            SwapperSwitch = CreateSprite($"{shortPath}.SwapperSwitch.png");
+            SwapperSwitchDisabled = CreateSprite($"{shortPath}.SwapperSwitchDisabled.png");
+            Footprint = CreateSprite($"{shortPath}.Footprint.png");
+            Arrow = CreateSprite($"{shortPath}.Arrow.png");
+            ButtonSprite = CreateSprite($"{shortPath}.Button.png");
+            DisperseSprite = CreateSprite($"{shortPath}.Disperse.png");
+            CycleBackSprite = CreateSprite($"{shortPath}.CycleBack.png");
+            CycleForwardSprite = CreateSprite($"{shortPath}.CycleForward.png");
+            GuessSprite = CreateSprite($"{shortPath}.Guess.png");
+            BlackmailLetterSprite = CreateSprite($"{shortPath}.BlackmailLetter.png");
+            BlackmailOverlaySprite = CreateSprite($"{shortPath}.BlackmailOverlay.png");
+            LighterSprite = CreateSprite($"{shortPath}.Lighter.png");
+            DarkerSprite = CreateSprite($"{shortPath}.Darker.png");
+            RevealSprite = CreateSprite($"{shortPath}.Reveal.png");
+            ImitateSelectSprite = CreateSprite($"{shortPath}.ImitateSelect.png");
+            ImitateDeselectSprite = CreateSprite($"{shortPath}.ImitateDeselect.png");
+            LockSprite = CreateSprite($"{shortPath}.Lock.png");
+            CrimeSceneSprite = CreateSprite($"{shortPath}.CrimeScene.png");
+            HysteriaSprite = CreateSprite($"{shortPath}.Hysteria.png");
+            InJailSprite = CreateSprite($"{shortPath}.InJail.png");
+            JailCellSprite = CreateSprite($"{shortPath}.JailCell.png");
+            ExecuteSprite = CreateSprite($"{shortPath}.Execute.png");
+            SoulSprite = CreateSprite($"{shortPath}.Soul.png");
+            ShootSprite = CreateSprite($"{shortPath}.Shoot.png");
+            BarricadeSprite = CreateSprite($"{shortPath}.Barricade.png");
+            DetectSprite = CreateSprite($"{shortPath}.Detect.png");
+
+            ToUBanner = CreateSprite($"{shortPath}.TouBanner.png", 125f);
+            UpdateTOUButton = CreateSprite($"{shortPath}.UpdateToUButton.png");
+            UpdateSubmergedButton = CreateSprite($"{shortPath}.UpdateSubmergedButton.png");
+
+            ZoomPlusButton = CreateSprite($"{shortPath}.Plus.png");
+            ZoomMinusButton = CreateSprite($"{shortPath}.Minus.png");
+            ZoomPlusActiveButton = CreateSprite($"{shortPath}.PlusActive.png");
+            ZoomMinusActiveButton = CreateSprite($"{shortPath}.MinusActive.png");
+
             var crewPath = "TownOfUs.Resources.CrewButtons";
             EngineerFix = CreateSprite($"{crewPath}.Engineer.png");
             MedicSprite = CreateSprite($"{crewPath}.Medic.png");
@@ -215,44 +253,6 @@ namespace TownOfUs
             GuardSprite = CreateSprite($"{neutPath}.Guard.png");
             BribeSprite = CreateSprite($"{neutPath}.Bribe.png");
 
-            var shortPath = "TownOfUs.Resources";
-
-            SwapperSwitch = CreateSprite($"{shortPath}.SwapperSwitch.png");
-            SwapperSwitchDisabled = CreateSprite($"{shortPath}.SwapperSwitchDisabled.png");
-            Footprint = CreateSprite($"{shortPath}.Footprint.png");
-            Arrow = CreateSprite($"{shortPath}.Arrow.png");
-            ButtonSprite = CreateSprite($"{shortPath}.Button.png");
-            DisperseSprite = CreateSprite($"{shortPath}.Disperse.png");
-            CycleBackSprite = CreateSprite($"{shortPath}.CycleBack.png");
-            CycleForwardSprite = CreateSprite($"{shortPath}.CycleForward.png");
-            GuessSprite = CreateSprite($"{shortPath}.Guess.png");
-            BlackmailLetterSprite = CreateSprite($"{shortPath}.BlackmailLetter.png");
-            BlackmailOverlaySprite = CreateSprite($"{shortPath}.BlackmailOverlay.png");
-            LighterSprite = CreateSprite($"{shortPath}.Lighter.png");
-            DarkerSprite = CreateSprite($"{shortPath}.Darker.png");
-            RevealSprite = CreateSprite($"{shortPath}.Reveal.png");
-            ImitateSelectSprite = CreateSprite($"{shortPath}.ImitateSelect.png");
-            ImitateDeselectSprite = CreateSprite($"{shortPath}.ImitateDeselect.png");
-            LockSprite = CreateSprite($"{shortPath}.Lock.png");
-            CrimeSceneSprite = CreateSprite($"{shortPath}.CrimeScene.png");
-            HysteriaSprite = CreateSprite($"{shortPath}.Hysteria.png");
-            InJailSprite = CreateSprite($"{shortPath}.InJail.png");
-            JailCellSprite = CreateSprite($"{shortPath}.JailCell.png");
-            ExecuteSprite = CreateSprite($"{shortPath}.Execute.png");
-            SoulSprite = CreateSprite($"{shortPath}.Soul.png");
-            ShootSprite = CreateSprite($"{shortPath}.Shoot.png");
-            BarricadeSprite = CreateSprite($"{shortPath}.Barricade.png");
-            DetectSprite = CreateSprite($"{shortPath}.Detect.png");
-
-            ToUBanner = CreateSprite($"{shortPath}.TouBanner.png", 125f);
-            UpdateTOUButton = CreateSprite($"{shortPath}.UpdateToUButton.png");
-            UpdateSubmergedButton = CreateSprite($"{shortPath}.UpdateSubmergedButton.png");
-
-            ZoomPlusButton = CreateSprite($"{shortPath}.Plus.png");
-            ZoomMinusButton = CreateSprite($"{shortPath}.Minus.png");
-            ZoomPlusActiveButton = CreateSprite($"{shortPath}.PlusActive.png");
-            ZoomMinusActiveButton = CreateSprite($"{shortPath}.MinusActive.png");
-
             PalettePatch.Load();
             ClassInjector.RegisterTypeInIl2Cpp<RainbowBehaviour>();
             ClassInjector.RegisterTypeInIl2Cpp<CrimeScene>();
@@ -275,21 +275,31 @@ namespace TownOfUs
             var pivot = new Vector2(0.5f, 0.5f);
 
             var assembly = Assembly.GetExecutingAssembly();
-            var tex = AmongUsExtensions.CreateEmptyTexture();
-            var imageStream = assembly.GetManifestResourceStream(name);
-            var img = imageStream.ReadFully();
-            LoadImage(tex, img, true);
-            tex.DontDestroy();
-            var sprite = Sprite.Create(tex, new Rect(0.0f, 0.0f, tex.width, tex.height), pivot, pixelsPerUnit);
+            var tex = LoadTextureFromResourcePath(name, assembly);
+            var sprite = Sprite.Create(tex, new Rect(0, 0, tex.width, tex.height), new Vector2(0.5f, 0.5f), pixelsPerUnit);
+            sprite.name = name;
             sprite.DontDestroy();
             return sprite;
         }
-
-        public static void LoadImage(Texture2D tex, byte[] data, bool markNonReadable)
+        public static Texture2D LoadTextureFromResourcePath(string resourcePath, Assembly assembly)
         {
-            _iCallLoadImage ??= IL2CPP.ResolveICall<DLoadImage>("UnityEngine.ImageConversion::LoadImage");
-            var il2CPPArray = (Il2CppStructArray<byte>) data;
-            _iCallLoadImage.Invoke(tex.Pointer, il2CPPArray.Pointer, markNonReadable);
+            var tex = new Texture2D(1, 1, TextureFormat.ARGB32, false)
+            {
+                wrapMode = TextureWrapMode.Clamp,
+            };
+            var myStream = assembly.GetManifestResourceStream(resourcePath);
+            if (myStream != null)
+            {
+                var buttonTexture = myStream.ReadFully();
+                tex.LoadImage(buttonTexture, false);
+            }
+            else
+            {
+                throw new ArgumentException($"Resource not found: {resourcePath}");
+            }
+
+            tex.name = resourcePath;
+            return tex;
         }
 
         private delegate bool DLoadImage(IntPtr tex, IntPtr data, bool markNonReadable);

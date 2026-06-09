@@ -505,6 +505,14 @@ namespace TownOfUs.Roles
                             __instance.__4__this.BackgroundBar.material.color = Color.white;
                             PlayerControl.LocalPlayer.Data.Role.IntroSound = GetIntroSound(RoleTypes.Shapeshifter);
                         }
+                        else if (role.Faction == Faction.Impostors)
+                        {
+                            PlayerControl.LocalPlayer.Data.Role.IntroSound = GetIntroSound(RoleTypes.Impostor);
+                        }
+                        else
+                        {
+                            PlayerControl.LocalPlayer.Data.Role.IntroSound = GetIntroSound(RoleTypes.Crewmate);
+                        }
                         __instance.__4__this.RoleText.text = role.Name;
                         __instance.__4__this.RoleText.color = role.Color;
                         __instance.__4__this.YouAreText.color = role.Color;
@@ -553,6 +561,14 @@ namespace TownOfUs.Roles
                             __instance.__4__this.TeamTitle.color = Color.white;
                             __instance.__4__this.BackgroundBar.material.color = Color.white;
                             PlayerControl.LocalPlayer.Data.Role.IntroSound = GetIntroSound(RoleTypes.Shapeshifter);
+                        }
+                        else if (role.Faction == Faction.Impostors)
+                        {
+                            PlayerControl.LocalPlayer.Data.Role.IntroSound = GetIntroSound(RoleTypes.Impostor);
+                        }
+                        else
+                        {
+                            PlayerControl.LocalPlayer.Data.Role.IntroSound = GetIntroSound(RoleTypes.Crewmate);
                         }
                         __instance.__4__this.RoleText.text = role.Name;
                         __instance.__4__this.RoleText.color = role.Color;
@@ -630,6 +646,14 @@ namespace TownOfUs.Roles
                             __instance.__4__this.TeamTitle.color = Color.white;
                             __instance.__4__this.BackgroundBar.material.color = Color.white;
                             PlayerControl.LocalPlayer.Data.Role.IntroSound = GetIntroSound(RoleTypes.Shapeshifter);
+                        }
+                        else if (role.Faction == Faction.Impostors)
+                        {
+                            PlayerControl.LocalPlayer.Data.Role.IntroSound = GetIntroSound(RoleTypes.Impostor);
+                        }
+                        else
+                        {
+                            PlayerControl.LocalPlayer.Data.Role.IntroSound = GetIntroSound(RoleTypes.Crewmate);
                         }
                         __instance.__4__this.RoleText.text = role.Name;
                         __instance.__4__this.RoleText.color = role.Color;
