@@ -34,6 +34,8 @@ namespace TownOfUs
         public const string VersionTag = "<color=#ff33fc></color>";
 
         public static AssetLoader bundledAssets;
+        public static Sprite NextSprite;
+        public static Sprite NextActiveSprite;
 
         public static Sprite JanitorClean;
         public static Sprite EngineerFix;
@@ -119,8 +121,6 @@ namespace TownOfUs
         public static Sprite DetectSprite;
 
         public static Sprite ToUBanner;
-        public static Sprite UpdateTOUButton;
-        public static Sprite UpdateSubmergedButton;
 
         public static Sprite ZoomPlusButton;
         public static Sprite ZoomMinusButton;
@@ -128,8 +128,6 @@ namespace TownOfUs
         public static Sprite ZoomMinusActiveButton;
 
         public static Vector3 ButtonPosition { get; private set; } = new Vector3(2.6f, 0.7f, -9f);
-
-        private static DLoadImage _iCallLoadImage;
 
         private Harmony _harmony;
 
@@ -153,6 +151,8 @@ namespace TownOfUs
 
             var shortPath = "TownOfUs.Resources";
 
+            NextSprite = CreateSprite($"{shortPath}.NextButton.png");
+            NextActiveSprite = CreateSprite($"{shortPath}.NextButtonActive.png");
             SwapperSwitch = CreateSprite($"{shortPath}.SwapperSwitch.png");
             SwapperSwitchDisabled = CreateSprite($"{shortPath}.SwapperSwitchDisabled.png");
             Footprint = CreateSprite($"{shortPath}.Footprint.png");
@@ -181,8 +181,6 @@ namespace TownOfUs
             DetectSprite = CreateSprite($"{shortPath}.Detect.png");
 
             ToUBanner = CreateSprite($"{shortPath}.TouBanner.png", 125f);
-            UpdateTOUButton = CreateSprite($"{shortPath}.UpdateToUButton.png");
-            UpdateSubmergedButton = CreateSprite($"{shortPath}.UpdateSubmergedButton.png");
 
             ZoomPlusButton = CreateSprite($"{shortPath}.Plus.png");
             ZoomMinusButton = CreateSprite($"{shortPath}.Minus.png");
