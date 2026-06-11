@@ -1,6 +1,6 @@
-## TOU Reactivated was a mod that set out to continue SlushieGoose's Town of Us mod. However, the lead developer has halted development on the mod. For the sake of users, the Mira team will continue to support it, albeit *without major updates*.
+## TOU Reactivated was a mod that set out to continue SlushieGoose's Town of Us mod. This will continue to be supported, but little-to-no content updates will be made to keep the mod's simplicity.
 
-## If you wish to play a frequently updated version of TOU with more content and QOL, then it is recommended to use [Town of Us: Mira](https://github.com/AU-Avengers/TOU-Mira) instead.
+## If you wish to play a frequently updated version of TOU with more content updates, then it is recommended to use [Town of Us: Mira](https://github.com/AU-Avengers/TOU-Mira) instead.
 
 ![LOGO](./Images/TOU-logo.png)
 ![Roles](./Images/Roles.png)
