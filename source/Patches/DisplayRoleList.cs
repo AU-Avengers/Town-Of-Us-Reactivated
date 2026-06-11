@@ -1,9 +1,12 @@
 using System.Collections.Generic;
+using System.Reflection;
 using AmongUs.GameOptions;
 using HarmonyLib;
+using Il2CppInterop.Runtime.InteropTypes;
 using Reactor.Utilities.Extensions;
 using TMPro;
 using TownOfUs.CustomOption;
+using TownOfUs.Utilities;
 using UnityEngine;
 
 namespace TownOfUs.Patches
@@ -115,30 +118,6 @@ namespace TownOfUs.Patches
                 }
                 RoleListTextComp.text = $"<color=#FFD700>Role List:</color>\n{rolelist}";
                 RoleList.SetActive(true);
-            }
-        }
-    }
-
-    [HarmonyPatch(typeof(IntroCutscene), nameof(IntroCutscene.OnDestroy))]
-    internal static class HideRoleListInIntroCutscene
-    {
-        private static void Postfix()
-        {
-            if (DisplayRoleList.RoleListTextComp)
-            {
-                DisplayRoleList.RoleListTextComp.enabled = false;
-            }
-        }
-    }
-
-    [HarmonyPatch(typeof(LobbyBehaviour), nameof(LobbyBehaviour.Start))]
-    internal static class RevealRoleListInLobby
-    {
-        private static void Postfix()
-        {
-            if (DisplayRoleList.RoleListTextComp)
-            {
-                DisplayRoleList.RoleListTextComp.enabled = true;
             }
         }
     }

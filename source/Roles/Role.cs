@@ -383,16 +383,24 @@ namespace TownOfUs.Roles
                 $"{ColorString}Role: {Name}\n{TaskText()}</color>";
         }
 
-        public static T Gen<T>(Type type, PlayerControl player, CustomRPC rpc)
+        public static T Gen<T>(Type type, PlayerControl player, CustomRPC rpc, bool? isCrew = null)
         {
+            if (isCrew.HasValue)
+            {
+                player.RpcSetRole(isCrew.Value ? RoleTypes.Crewmate : RoleTypes.Impostor);
+            }
             var role = (T)Activator.CreateInstance(type, new object[] { player });
 
             Utils.Rpc(rpc, player.PlayerId);
             return role;
         }
 
-        public static T GenRole<T>(Type type, PlayerControl player)
+        public static T GenRole<T>(Type type, PlayerControl player, bool? isCrew = null)
         {
+            if (isCrew.HasValue)
+            {
+                player.RpcSetRole(isCrew.Value ? RoleTypes.Crewmate : RoleTypes.Impostor);
+            }
             var role = (T)Activator.CreateInstance(type, new object[] { player });
 
             Utils.Rpc(CustomRPC.SetRole, player.PlayerId, (string)type.FullName);
@@ -407,10 +415,14 @@ namespace TownOfUs.Roles
             return modifier;
         }
 
-        public static T GenRole<T>(Type type, List<PlayerControl> players)
+        public static T GenRole<T>(Type type, List<PlayerControl> players, bool? isCrew = null)
         {
             var player = players[Random.RandomRangeInt(0, players.Count)];
 
+            if (isCrew.HasValue)
+            {
+                player.RpcSetRole(isCrew.Value ? RoleTypes.Crewmate : RoleTypes.Impostor);
+            }
             var role = GenRole<T>(type, player);
             players.Remove(player);
             return role;
@@ -482,27 +494,26 @@ namespace TownOfUs.Roles
                 }
             }
 
-            [HarmonyPatch(typeof(IntroCutscene._ShowTeam_d__38), nameof(IntroCutscene._ShowTeam_d__38.MoveNext))]
+            [HarmonyPatch]
             public static class IntroCutscene_ShowTeam__d_MoveNext
             {
-                public static void Prefix(IntroCutscene._ShowTeam_d__38 __instance)
+                public static MethodBase TargetMethod()
                 {
-                    var role = GetRole(PlayerControl.LocalPlayer);
-
-                    if (role != null) role.IntroPrefix(__instance);
+                    return StateMachineWrapper<IntroCutscene>.GetStateMachineMoveNext(nameof(IntroCutscene.ShowTeam))!;
                 }
-
-                public static void Postfix(IntroCutscene._ShowRole_d__41 __instance)
+                public static void Postfix(Il2CppObjectBase __instance)
                 {
+                    var wrapper = new StateMachineWrapper<IntroCutscene>(__instance);
+
+                    var cutscene = wrapper.Instance;
                     var role = GetRole(PlayerControl.LocalPlayer);
-                    // var alpha = __instance.__4__this.RoleText.color.a;
                     if (role != null)
                     {
                         if (role.Faction == Faction.NeutralKilling || role.Faction == Faction.NeutralEvil || role.Faction == Faction.NeutralBenign)
                         {
-                            __instance.__4__this.TeamTitle.text = "Neutral";
-                            __instance.__4__this.TeamTitle.color = Color.white;
-                            __instance.__4__this.BackgroundBar.material.color = Color.white;
+                            cutscene.TeamTitle.text = "Neutral";
+                            cutscene.TeamTitle.color = Color.white;
+                            cutscene.BackgroundBar.material.color = Color.white;
                             PlayerControl.LocalPlayer.Data.Role.IntroSound = GetIntroSound(RoleTypes.Shapeshifter);
                         }
                         else if (role.Faction == Faction.Impostors)
@@ -513,11 +524,11 @@ namespace TownOfUs.Roles
                         {
                             PlayerControl.LocalPlayer.Data.Role.IntroSound = GetIntroSound(RoleTypes.Crewmate);
                         }
-                        __instance.__4__this.RoleText.text = role.Name;
-                        __instance.__4__this.RoleText.color = role.Color;
-                        __instance.__4__this.YouAreText.color = role.Color;
-                        __instance.__4__this.RoleBlurbText.color = role.Color;
-                        __instance.__4__this.RoleBlurbText.text = role.ImpostorText();
+                        cutscene.RoleText.text = role.Name;
+                        cutscene.RoleText.color = role.Color;
+                        cutscene.YouAreText.color = role.Color;
+                        cutscene.RoleBlurbText.color = role.Color;
+                        cutscene.RoleBlurbText.text = role.ImpostorText();
                     }
 
                     if (ModifierText != null)
@@ -541,25 +552,32 @@ namespace TownOfUs.Roles
                         ModifierText.color = Color.white;
 
                         ModifierText.transform.position =
-                            __instance.__4__this.transform.position - new Vector3(0f, 1.6f, 0f);
+                            cutscene.transform.position - new Vector3(0f, 1.6f, 0f);
                         ModifierText.gameObject.SetActive(true);
                     }
                 }
             }
 
-            [HarmonyPatch(typeof(IntroCutscene._ShowRole_d__41), nameof(IntroCutscene._ShowRole_d__41.MoveNext))]
+            [HarmonyPatch]
             public static class IntroCutscene_ShowRole_d__24
             {
-                public static void Postfix(IntroCutscene._ShowRole_d__41 __instance)
+                public static MethodBase TargetMethod()
                 {
+                    return StateMachineWrapper<IntroCutscene>.GetStateMachineMoveNext(nameof(IntroCutscene.ShowRole))!;
+                }
+                public static void Postfix(Il2CppObjectBase __instance)
+                {
+                    var wrapper = new StateMachineWrapper<IntroCutscene>(__instance);
+
+                    var cutscene = wrapper.Instance;
                     var role = GetRole(PlayerControl.LocalPlayer);
                     if (role != null)
                     {
                         if (role.Faction == Faction.NeutralKilling || role.Faction == Faction.NeutralEvil || role.Faction == Faction.NeutralBenign)
                         {
-                            __instance.__4__this.TeamTitle.text = "Neutral";
-                            __instance.__4__this.TeamTitle.color = Color.white;
-                            __instance.__4__this.BackgroundBar.material.color = Color.white;
+                            cutscene.TeamTitle.text = "Neutral";
+                            cutscene.TeamTitle.color = Color.white;
+                            cutscene.BackgroundBar.material.color = Color.white;
                             PlayerControl.LocalPlayer.Data.Role.IntroSound = GetIntroSound(RoleTypes.Shapeshifter);
                         }
                         else if (role.Faction == Faction.Impostors)
@@ -570,12 +588,12 @@ namespace TownOfUs.Roles
                         {
                             PlayerControl.LocalPlayer.Data.Role.IntroSound = GetIntroSound(RoleTypes.Crewmate);
                         }
-                        __instance.__4__this.RoleText.text = role.Name;
-                        __instance.__4__this.RoleText.color = role.Color;
-                        __instance.__4__this.YouAreText.color = role.Color;
-                        __instance.__4__this.RoleBlurbText.color = role.Color;
-                        __instance.__4__this.RoleBlurbText.text = role.ImpostorText();
-                        // __instance.__4__this.BackgroundBar.material.color = role.Color;
+                        cutscene.RoleText.text = role.Name;
+                        cutscene.RoleText.color = role.Color;
+                        cutscene.YouAreText.color = role.Color;
+                        cutscene.RoleBlurbText.color = role.Color;
+                        cutscene.RoleBlurbText.text = role.ImpostorText();
+                        // cutscene.BackgroundBar.material.color = role.Color;
                     }
 
                     if (ModifierText != null)
@@ -599,7 +617,7 @@ namespace TownOfUs.Roles
                         ModifierText.color = Color.white;
 
                         ModifierText.transform.position =
-                            __instance.__4__this.transform.position - new Vector3(0f, 1.6f, 0f);
+                            cutscene.transform.position - new Vector3(0f, 1.6f, 0f);
                         ModifierText.gameObject.SetActive(true);
                     }
 
@@ -627,24 +645,31 @@ namespace TownOfUs.Roles
                             }
                         }
 
-                        if (isAny) __instance.__4__this.ImpostorText.text = "There are an <color=#FF0000FF>Unknown Number of Impostors</color> among us";
+                        if (isAny) cutscene.ImpostorText.text = "There are an <color=#FF0000FF>Unknown Number of Impostors</color> among us";
                     }
                 }
             }
 
-            [HarmonyPatch(typeof(IntroCutscene._CoBegin_d__35), nameof(IntroCutscene._CoBegin_d__35.MoveNext))]
+            [HarmonyPatch]
             public static class IntroCutscene_CoBegin_d__29
             {
-                public static void Postfix(IntroCutscene._CoBegin_d__35 __instance)
+                public static MethodBase TargetMethod()
                 {
+                    return StateMachineWrapper<IntroCutscene>.GetStateMachineMoveNext(nameof(IntroCutscene.CoBegin))!;
+                }
+                public static void Postfix(Il2CppObjectBase __instance)
+                {
+                    var wrapper = new StateMachineWrapper<IntroCutscene>(__instance);
+
+                    var cutscene = wrapper.Instance;
                     var role = GetRole(PlayerControl.LocalPlayer);
                     if (role != null)
                     {
                         if (role.Faction == Faction.NeutralKilling || role.Faction == Faction.NeutralEvil || role.Faction == Faction.NeutralBenign)
                         {
-                            __instance.__4__this.TeamTitle.text = "Neutral";
-                            __instance.__4__this.TeamTitle.color = Color.white;
-                            __instance.__4__this.BackgroundBar.material.color = Color.white;
+                            cutscene.TeamTitle.text = "Neutral";
+                            cutscene.TeamTitle.color = Color.white;
+                            cutscene.BackgroundBar.material.color = Color.white;
                             PlayerControl.LocalPlayer.Data.Role.IntroSound = GetIntroSound(RoleTypes.Shapeshifter);
                         }
                         else if (role.Faction == Faction.Impostors)
@@ -655,12 +680,12 @@ namespace TownOfUs.Roles
                         {
                             PlayerControl.LocalPlayer.Data.Role.IntroSound = GetIntroSound(RoleTypes.Crewmate);
                         }
-                        __instance.__4__this.RoleText.text = role.Name;
-                        __instance.__4__this.RoleText.color = role.Color;
-                        __instance.__4__this.YouAreText.color = role.Color;
-                        __instance.__4__this.RoleBlurbText.color = role.Color;
-                        __instance.__4__this.RoleBlurbText.text = role.ImpostorText();
-                        __instance.__4__this.BackgroundBar.material.color = role.Color;
+                        cutscene.RoleText.text = role.Name;
+                        cutscene.RoleText.color = role.Color;
+                        cutscene.YouAreText.color = role.Color;
+                        cutscene.RoleBlurbText.color = role.Color;
+                        cutscene.RoleBlurbText.text = role.ImpostorText();
+                        cutscene.BackgroundBar.material.color = role.Color;
                     }
 
                     if (ModifierText != null)
@@ -684,7 +709,7 @@ namespace TownOfUs.Roles
                         ModifierText.color = Color.white;
 
                         ModifierText.transform.position =
-                            __instance.__4__this.transform.position - new Vector3(0f, 1.6f, 0f);
+                            cutscene.transform.position - new Vector3(0f, 1.6f, 0f);
                         ModifierText.gameObject.SetActive(true);
                     }
 
@@ -712,7 +737,7 @@ namespace TownOfUs.Roles
                             }
                         }
 
-                        if (isAny) __instance.__4__this.ImpostorText.text = "There are an <color=#FF0000FF>Unknown Number of Impostors</color> among us";
+                        if (isAny) cutscene.ImpostorText.text = "There are an <color=#FF0000FF>Unknown Number of Impostors</color> among us";
                     }
                 }
             }

@@ -583,19 +583,19 @@ namespace TownOfUs
             // Hand out appropriate roles to crewmates and impostors.
             foreach (var (type, _, unique) in crewRoles)
             {
-                Role.GenRole<Role>(type, crewmates);
+                Role.GenRole<Role>(type, crewmates, true);
             }
             foreach (var (type, _, unique) in impRoles)
             {
-                Role.GenRole<Role>(type, impostors);
+                Role.GenRole<Role>(type, impostors, false);
             }
 
             // Assign vanilla roles to anyone who did not receive a role.
             foreach (var crewmate in crewmates)
-                Role.GenRole<Role>(typeof(Crewmate), crewmate);
+                Role.GenRole<Role>(typeof(Crewmate), crewmate, true);
 
             foreach (var impostor in impostors)
-                Role.GenRole<Role>(typeof(Impostor), impostor);
+                Role.GenRole<Role>(typeof(Impostor), impostor, false);
 
             // Hand out assassin ability to killers according to the settings.
             var canHaveAbility = PlayerControl.AllPlayerControls.ToArray().Where(player => player.Is(Faction.Impostors)).ToList();
@@ -1623,7 +1623,7 @@ namespace TownOfUs
         [HarmonyPatch(typeof(RoleManager), nameof(RoleManager.SelectRoles))]
         public static class RpcSetRole
         {
-            public static void Postfix()
+            public static bool Prefix()
             {
                 PluginSingleton<TownOfUs>.Instance.Log.LogMessage("RPC SET ROLE");
                 var infected = GameData.Instance.AllPlayers.ToArray().Where(o => o.IsImpostor());
@@ -1682,7 +1682,7 @@ namespace TownOfUs
                     Utils.Rpc(CustomRPC.Start, byte.MaxValue);
                 }
 
-                if (GameOptionsManager.Instance.CurrentGameOptions.GameMode == GameModes.HideNSeek) return;
+                if (GameOptionsManager.Instance.CurrentGameOptions.GameMode == GameModes.HideNSeek) return true;
 
                 SetPhantom.PhantomOn = Check(CustomGameOptions.PhantomOn);
                 SetHaunter.HaunterOn = Check(CustomGameOptions.HaunterOn);
@@ -1945,6 +1945,7 @@ namespace TownOfUs
                 #endregion
 
                 GenEachRole(infected.ToList());
+                return false;
             }
         }
     }
