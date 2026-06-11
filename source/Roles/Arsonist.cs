@@ -12,7 +12,7 @@ namespace TownOfUs.Roles
 {
     public class Arsonist : Role
     {
-        public static Material igniteMaterial = TownOfUs.bundledAssets.Get<Material>("ArsonistTrap");
+        public static Material igniteMaterial = TownOfUs.bundledAssets.Get<Material>("ignite");
         public IgniteMaterial igniteRadius = null;
 
         private KillButton _igniteButton;

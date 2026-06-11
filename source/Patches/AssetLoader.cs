@@ -11,18 +11,17 @@ namespace TownOfUs.Patches
 {
     public class AssetLoader
     {
-        public static string[] AssetBundles = { "trappershader", "soundvision" };
 
         public AssetLoader() { Initialize(); }
 
         public void Initialize()
         {
-            Array.ForEach(AssetBundles, x => {
-                var b = loadBundle(x);
-                bundles.Add(b.name, b);
-                b.GetAllAssetNames().ToList().ForEach(y => {
-                    objectname_to_bundle.Add(ConvertToBaseName(y), x);
-                });
+            var arch = OperatingSystem.IsAndroid() ? "android" : "win";
+            var bundle = $"tour-assets-{arch}.bundle";
+            var b = loadBundle(bundle);
+            bundles.Add(b.name, b);
+            b.GetAllAssetNames().ToList().ForEach(y => {
+                objectname_to_bundle.Add(ConvertToBaseName(y), bundle);
             });
         }
 
