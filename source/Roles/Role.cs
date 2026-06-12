@@ -383,24 +383,16 @@ namespace TownOfUs.Roles
                 $"{ColorString}Role: {Name}\n{TaskText()}</color>";
         }
 
-        public static T Gen<T>(Type type, PlayerControl player, CustomRPC rpc, bool? isCrew = null)
+        public static T Gen<T>(Type type, PlayerControl player, CustomRPC rpc)
         {
-            if (isCrew.HasValue)
-            {
-                player.RpcSetRole(isCrew.Value ? RoleTypes.Crewmate : RoleTypes.Impostor);
-            }
             var role = (T)Activator.CreateInstance(type, new object[] { player });
 
             Utils.Rpc(rpc, player.PlayerId);
             return role;
         }
 
-        public static T GenRole<T>(Type type, PlayerControl player, bool? isCrew = null)
+        public static T GenRole<T>(Type type, PlayerControl player)
         {
-            if (isCrew.HasValue)
-            {
-                player.RpcSetRole(isCrew.Value ? RoleTypes.Crewmate : RoleTypes.Impostor);
-            }
             var role = (T)Activator.CreateInstance(type, new object[] { player });
 
             Utils.Rpc(CustomRPC.SetRole, player.PlayerId, (string)type.FullName);
@@ -415,14 +407,10 @@ namespace TownOfUs.Roles
             return modifier;
         }
 
-        public static T GenRole<T>(Type type, List<PlayerControl> players, bool? isCrew = null)
+        public static T GenRole<T>(Type type, List<PlayerControl> players)
         {
             var player = players[Random.RandomRangeInt(0, players.Count)];
 
-            if (isCrew.HasValue)
-            {
-                player.RpcSetRole(isCrew.Value ? RoleTypes.Crewmate : RoleTypes.Impostor);
-            }
             var role = GenRole<T>(type, player);
             players.Remove(player);
             return role;

@@ -583,19 +583,19 @@ namespace TownOfUs
             // Hand out appropriate roles to crewmates and impostors.
             foreach (var (type, _, unique) in crewRoles)
             {
-                Role.GenRole<Role>(type, crewmates, true);
+                Role.GenRole<Role>(type, crewmates);
             }
             foreach (var (type, _, unique) in impRoles)
             {
-                Role.GenRole<Role>(type, impostors, false);
+                Role.GenRole<Role>(type, impostors);
             }
 
             // Assign vanilla roles to anyone who did not receive a role.
             foreach (var crewmate in crewmates)
-                Role.GenRole<Role>(typeof(Crewmate), crewmate, true);
+                Role.GenRole<Role>(typeof(Crewmate), crewmate);
 
             foreach (var impostor in impostors)
-                Role.GenRole<Role>(typeof(Impostor), impostor, false);
+                Role.GenRole<Role>(typeof(Impostor), impostor);
 
             // Hand out assassin ability to killers according to the settings.
             var canHaveAbility = PlayerControl.AllPlayerControls.ToArray().Where(player => player.Is(Faction.Impostors)).ToList();
@@ -1623,7 +1623,23 @@ namespace TownOfUs
         [HarmonyPatch(typeof(RoleManager), nameof(RoleManager.SelectRoles))]
         public static class RpcSetRole
         {
-            public static bool Prefix()
+            public static void Prefix(RoleManager __instance)
+            {
+                var currentGameOptions = GameOptionsManager.Instance.CurrentGameOptions;
+                var roleOptions = currentGameOptions.RoleOptions;
+
+                foreach (var role in __instance.AllRoles.ToArray().Select(x => x.Role))
+                {
+                    if (role is RoleTypes.Crewmate or RoleTypes.Impostor or RoleTypes.CrewmateGhost
+                        or RoleTypes.ImpostorGhost)
+                    {
+                        continue;
+                    }
+                    roleOptions.SetRoleRate(role, 0, 0);
+                }
+            }
+
+            public static void Postfix()
             {
                 PluginSingleton<TownOfUs>.Instance.Log.LogMessage("RPC SET ROLE");
                 var infected = GameData.Instance.AllPlayers.ToArray().Where(o => o.IsImpostor());
@@ -1682,7 +1698,7 @@ namespace TownOfUs
                     Utils.Rpc(CustomRPC.Start, byte.MaxValue);
                 }
 
-                if (GameOptionsManager.Instance.CurrentGameOptions.GameMode == GameModes.HideNSeek) return true;
+                if (GameOptionsManager.Instance.CurrentGameOptions.GameMode == GameModes.HideNSeek) return;
 
                 SetPhantom.PhantomOn = Check(CustomGameOptions.PhantomOn);
                 SetHaunter.HaunterOn = Check(CustomGameOptions.HaunterOn);
@@ -1945,7 +1961,6 @@ namespace TownOfUs
                 #endregion
 
                 GenEachRole(infected.ToList());
-                return false;
             }
         }
     }
