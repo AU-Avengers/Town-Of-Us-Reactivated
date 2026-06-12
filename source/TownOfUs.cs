@@ -28,8 +28,9 @@ namespace TownOfUs
     [ReactorModFlags(Reactor.Networking.ModFlags.RequireOnAllClients)]
     public class TownOfUs : BasePlugin
     {
+        public static string DataPath => Path.GetFullPath("reactivated_presets", Application.persistentDataPath);
         public const string Id = "com.reactivated.townofus";
-        public const string VersionString = "5.4.0";
+        public const string VersionString = "6.0.0";
         public static System.Version Version = System.Version.Parse(VersionString);
         public const string VersionTag = "<color=#ff33fc></color>";
 

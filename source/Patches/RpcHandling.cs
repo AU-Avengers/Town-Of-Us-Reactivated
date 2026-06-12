@@ -1623,22 +1623,6 @@ namespace TownOfUs
         [HarmonyPatch(typeof(RoleManager), nameof(RoleManager.SelectRoles))]
         public static class RpcSetRole
         {
-            public static void Prefix(RoleManager __instance)
-            {
-                var currentGameOptions = GameOptionsManager.Instance.CurrentGameOptions;
-                var roleOptions = currentGameOptions.RoleOptions;
-
-                foreach (var role in __instance.AllRoles.ToArray().Select(x => x.Role))
-                {
-                    if (role is RoleTypes.Crewmate or RoleTypes.Impostor or RoleTypes.CrewmateGhost
-                        or RoleTypes.ImpostorGhost)
-                    {
-                        continue;
-                    }
-                    roleOptions.SetRoleRate(role, 0, 0);
-                }
-            }
-
             public static void Postfix()
             {
                 PluginSingleton<TownOfUs>.Instance.Log.LogMessage("RPC SET ROLE");
