@@ -1,4 +1,4 @@
-/*using HarmonyLib;
+using HarmonyLib;
 using UnityEngine;
 using System;
 using System.IO;
@@ -23,17 +23,26 @@ namespace TownOfUs
         {
             //Check if there's a ToU update
             ModUpdater.LaunchUpdater();
+            var auVersion = Version.Parse(Application.version);
+            PluginSingleton<TownOfUs>.Instance.Log.LogMessage($"Current AU Version is {Application.version}");
 
             var data = GetVersioning().FirstOrDefault(x => x.ModVersion.Equals(TownOfUs.VersionString));
             if (data != null)
             {
-                var RequiredVersions = data.InternalVersions;
-                var AUversion = Constants.GetBroadcastVersion();
-                if (!RequiredVersions.ContainsKey(AUversion))
+                var RequiredVersions = new Dictionary<Version, AuSupport>();
+                foreach (var pair in data.InternalVersions)
                 {
-                    string action = AUversion > RequiredVersions.Keys.Max() ? "downgrade" : "update";
+                    RequiredVersions.Add(Version.Parse(pair.Key), (AuSupport)pair.Value);
+                }
+                if (!RequiredVersions.TryGetValue(auVersion, out var support) || support is AuSupport.Broken)
+                {
+                    string action = auVersion > RequiredVersions.Keys.Max() ? "downgrade" : "update";
+                    var neededVersions = RequiredVersions.Where(x => x.Value is AuSupport.Preferred).Select(y => y.Key.ToString()).ToArray();
+                    var mainInfo = neededVersions.Count() > 1
+                        ? $"Town of Us {TownOfUs.VersionString} requires one of the following Among Us versions: {string.Join(",", neededVersions)}!"
+                        : $"Town of Us {TownOfUs.VersionString} requires Among Us v{neededVersions.First()}!";
                     string info =
-                        $"ALERT\nTown of Us {TownOfUs.VersionString} requires {RequiredVersions.Values.Last()}\nyou have {Application.version}\nPlease {action} your among us version"
+                        $"ALERT\n{mainInfo}\nyou have {Application.version}\nPlease {action} Among Us!"
                         + "\nvisit Github or Discord for any help";
                     TwitchManager man = TwitchManager.Instance;
                     ModUpdater.InfoPopup = UnityEngine.Object.Instantiate(man.TwitchPopup);
@@ -41,9 +50,26 @@ namespace TownOfUs
                     ModUpdater.InfoPopup.TextAreaTMP.enableAutoSizing = true;
                     ModUpdater.InfoPopup.Show(info);
                     ModUpdater.InfoPopup.StartCoroutine(Effects.Lerp(0.01f, new Action<float>((p) => { ModUpdater.setPopupText(info); })));
-                    ModUpdater.InvalidAUVersion = true;
+                    ModUpdater.AuVersionSupported = AuSupport.Broken;
 
                     return;
+                }
+                if (support is AuSupport.Usable)
+                {
+                    var neededVersions = RequiredVersions.Where(x => x.Value is AuSupport.Preferred).Select(y => y.Key.ToString()).ToArray();
+                    var mainInfo = neededVersions.Count() > 1
+                        ? $"Town of Us {TownOfUs.VersionString} works best with the following Among Us versions: {string.Join(",", neededVersions)}."
+                        : $"Town of Us {TownOfUs.VersionString} works best with Among Us v{neededVersions.First()}.";
+                    string info =
+                        $"NOTICE\n{mainInfo}\nAmong us v{Application.version} should still work, but may have issues."
+                        + "\nVisit Github or Discord for additional information";
+                    TwitchManager man = TwitchManager.Instance;
+                    ModUpdater.InfoPopup = UnityEngine.Object.Instantiate(man.TwitchPopup);
+                    ModUpdater.InfoPopup.TextAreaTMP.fontSize *= 0.68f;
+                    ModUpdater.InfoPopup.TextAreaTMP.enableAutoSizing = true;
+                    ModUpdater.InfoPopup.Show(info);
+                    ModUpdater.InfoPopup.StartCoroutine(Effects.Lerp(0.01f, new Action<float>((p) => { ModUpdater.setPopupText(info); })));
+                    ModUpdater.AuVersionSupported = AuSupport.Usable;
                 }
             }
             if (ModUpdater.HasTOUUpdate)
@@ -118,7 +144,7 @@ namespace TownOfUs
         public static bool Running = false;
         public static bool HasTOUUpdate = false;
         public static bool HasSubmergedUpdate = false;
-        public static bool InvalidAUVersion = false;
+        public static AuSupport AuVersionSupported = AuSupport.Preferred;
         public static string UpdateTOUURI = null;
         public static string UpdateSubmergedURI = null;
         private static Task UpdateTOUTask = null;
@@ -371,7 +397,7 @@ namespace TownOfUs
 
         public class UpdateData
         {
-            public Dictionary<int, string> InternalVersions { get; set; }
+            public Dictionary<string, int> InternalVersions { get; set; }
 
             public string ModVersion { get; set; }
         }
@@ -385,10 +411,17 @@ namespace TownOfUs
         {
             if (__instance != ModUpdater.InfoPopup) return;
 
-            if (ModUpdater.InvalidAUVersion)
+            if (ModUpdater.AuVersionSupported is AuSupport.Broken)
             {
                 Application.Quit();
             }
         }
     }
-}*/
+
+    public enum AuSupport
+    {
+        Preferred,
+        Usable,
+        Broken
+    }
+}

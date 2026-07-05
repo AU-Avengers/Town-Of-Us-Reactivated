@@ -122,6 +122,8 @@ namespace TownOfUs
         public static Sprite DetectSprite;
 
         public static Sprite ToUBanner;
+        public static Sprite UpdateTOUButton;
+        public static Sprite UpdateSubmergedButton;
 
         public static Sprite ZoomPlusButton;
         public static Sprite ZoomMinusButton;
@@ -152,6 +154,8 @@ namespace TownOfUs
 
             var shortPath = "TownOfUs.Resources";
 
+            UpdateTOUButton = CreateSprite($"{shortPath}.UpdateToUButton.png");
+            UpdateSubmergedButton = CreateSprite($"{shortPath}.UpdateSubmergedButton.png");
             NextSprite = CreateSprite($"{shortPath}.NextButton.png");
             NextActiveSprite = CreateSprite($"{shortPath}.NextButtonActive.png");
             SwapperSwitch = CreateSprite($"{shortPath}.SwapperSwitch.png");
