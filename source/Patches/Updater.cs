@@ -24,7 +24,6 @@ namespace TownOfUs
             //Check if there's a ToU update
             ModUpdater.LaunchUpdater();
             var auVersion = Version.Parse(Application.version);
-            PluginSingleton<TownOfUs>.Instance.Log.LogMessage($"Current AU Version is {Application.version}");
 
             var data = GetVersioning().FirstOrDefault(x => x.ModVersion.Equals(TownOfUs.VersionString));
             if (data != null)
@@ -51,6 +50,7 @@ namespace TownOfUs
                     ModUpdater.InfoPopup.Show(info);
                     ModUpdater.InfoPopup.StartCoroutine(Effects.Lerp(0.01f, new Action<float>((p) => { ModUpdater.setPopupText(info); })));
                     ModUpdater.AuVersionSupported = AuSupport.Broken;
+                    PluginSingleton<TownOfUs>.Instance.Log.LogMessage($"Current AU Version is {Application.version} | Tou Support: {AuSupport.Broken}");
 
                     return;
                 }
@@ -71,6 +71,11 @@ namespace TownOfUs
                     ModUpdater.InfoPopup.StartCoroutine(Effects.Lerp(0.01f, new Action<float>((p) => { ModUpdater.setPopupText(info); })));
                     ModUpdater.AuVersionSupported = AuSupport.Usable;
                 }
+                PluginSingleton<TownOfUs>.Instance.Log.LogMessage($"Current AU Version is {Application.version} | Tou Support: {support}");
+            }
+            else
+            {
+                PluginSingleton<TownOfUs>.Instance.Log.LogMessage($"Current AU Version is {Application.version} | Tou Support: ???");
             }
             if (ModUpdater.HasTOUUpdate)
             {
@@ -132,7 +137,7 @@ namespace TownOfUs
 
         private static List<ModUpdater.UpdateData> GetVersioning()
         {
-            var text = ModUpdater.Httpclient.GetAsync("https://github.com/AU-Avengers/Town-Of-Us-Reactivated/raw/master/source/VersioningV2.json")
+            var text = ModUpdater.Httpclient.GetAsync("https://github.com/eDonnes124/Town-Of-Us-R/raw/master/source/VersioningV2.json")
                                  .GetAwaiter().GetResult().Content.ReadAsStringAsync().Result;
             var data = JsonSerializer.Deserialize<List<ModUpdater.UpdateData>>(text, options: new() { ReadCommentHandling = JsonCommentHandling.Skip });
             return data;
