@@ -132,7 +132,7 @@ namespace TownOfUs
 
         private static List<ModUpdater.UpdateData> GetVersioning()
         {
-            var text = ModUpdater.Httpclient.GetAsync("https://github.com/eDonnes124/Town-Of-Us-R/raw/master/source/Versioning.json")
+            var text = ModUpdater.Httpclient.GetAsync("https://github.com/AU-Avengers/Town-Of-Us-Reactivated/raw/master/source/VersioningV2.json")
                                  .GetAwaiter().GetResult().Content.ReadAsStringAsync().Result;
             var data = JsonSerializer.Deserialize<List<ModUpdater.UpdateData>>(text, options: new() { ReadCommentHandling = JsonCommentHandling.Skip });
             return data;
