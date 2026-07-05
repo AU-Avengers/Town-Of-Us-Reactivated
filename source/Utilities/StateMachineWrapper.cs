@@ -17,7 +17,7 @@ public class StateMachineWrapper<T> : CompilerGeneratedObjectWrapper
     private readonly PropertyInfo _thisProperty;
     private readonly PropertyInfo _stateProperty;
 
-    private T? _parentInstance;
+    private T _parentInstance;
 
     /// <summary>
     /// Gets the instance of the parent class that owns the state machine.
@@ -79,7 +79,7 @@ public class StateMachineWrapper<T> : CompilerGeneratedObjectWrapper
     /// <param name="methodName">The name of the method whose state machine MoveNext method is to be retrieved.</param>
     /// <typeparam name="T">The type containing the state machine.</typeparam>
     /// <returns>The MoveNext <see cref="MethodBase"/> if found; otherwise, null.</returns>
-    public static MethodBase? GetStateMachineMoveNext(string methodName)
+    public static MethodBase GetStateMachineMoveNext(string methodName)
     {
         var typeName = typeof(T).FullName;
         var showRoleStateMachine =

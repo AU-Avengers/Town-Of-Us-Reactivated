@@ -24,7 +24,7 @@ namespace TownOfUs.Patches.CustomHats
 
         public static string LastHeader = string.Empty;
 
-        private static IEnumerator? loadRoutine;
+        private static IEnumerator loadRoutine;
 
         private static int hatIndex;
 
