@@ -580,6 +580,13 @@ namespace TownOfUs.CustomOption
                 int settingsThisHeader = 0;
                 int settingRowCount = 0;
 
+                for (int j = 0; j < __instance.settingsInfo.Count; j++)
+                {
+                     __instance.settingsInfo[j].gameObject.Destroy();
+                }
+
+                 __instance.settingsInfo.Clear();
+
                 foreach (var option in options)
                 {
                     if (option.Type == CustomOptionType.Header)
@@ -629,10 +636,10 @@ namespace TownOfUs.CustomOption
             }
         }
 
-        [HarmonyPatch(typeof(PlayerPhysics), nameof(PlayerPhysics.CoSpawnPlayer))]
+        [HarmonyPatch(typeof(PlayerPhysics._CoSpawnPlayer_d__42), "MoveNext")]
         private class PlayerJoinPatch
         {
-            public static void Postfix(PlayerPhysics __instance)
+            public static void Postfix(PlayerPhysics._CoSpawnPlayer_d__42 __instance)
             {
                 if (PlayerControl.AllPlayerControls.Count < 2 || !AmongUsClient.Instance ||
                     !PlayerControl.LocalPlayer || !AmongUsClient.Instance.AmHost) return;
