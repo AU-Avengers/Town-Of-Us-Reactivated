@@ -270,7 +270,7 @@ namespace TownOfUs
 
     #region DeconControl
     [HarmonyPatch(typeof(DeconControl), nameof(DeconControl.CanUse))]
-    public class DeconControlUse
+    public class DeconControlCanUse
     {
         [HarmonyBefore(LevelImpostorCompatibility.LiGuid)]
         public static void Prefix(DeconControl __instance,
@@ -292,6 +292,26 @@ namespace TownOfUs
         {
             if (__state)
                 playerInfo.IsDead = true;
+        }
+    }
+
+    [HarmonyPatch(typeof(DeconControl), nameof(DeconControl.Use))]
+    public class DeconControlUse
+    {
+        public static bool Prefix(DeconControl __instance)
+        {
+            var data = PlayerControl.LocalPlayer.Data;
+            __instance.CanUse(data, out var flag, out var _);
+            if (flag)
+            {
+                __instance.cooldown = 6f;
+                if (Constants.ShouldPlaySfx())
+                {
+                    SoundManager.Instance.PlaySound(__instance.UseSound, false, 1f, null);
+                }
+                __instance.OnUse.Invoke();
+            }
+            return false;
         }
     }
     #endregion
